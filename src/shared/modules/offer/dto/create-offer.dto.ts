@@ -30,16 +30,13 @@ export class CreateOfferDto {
   @IsEnum(CityName, { message: CreateOfferValidationMessage.city.invalid })
   public city: CityName;
 
+  @IsArray({ message: CreateOfferValidationMessage.images.invalidFormat })
+  @ArrayMinSize(6, { message: CreateOfferValidationMessage.images.invalidSize })
+  @ArrayMaxSize(6, { message: CreateOfferValidationMessage.images.invalidSize })
+  public images: string[];
+
   @IsBoolean({ message: CreateOfferValidationMessage.isPremium.invalidFormat })
   public isPremium: boolean;
-
-  @IsBoolean({ message: CreateOfferValidationMessage.isFavorite.invalidFormat })
-  public isFavorite: boolean;
-
-  @IsNumber({}, { message: CreateOfferValidationMessage.rating.invalidFormat })
-  @Min(1, { message: CreateOfferValidationMessage.rating.minValue })
-  @Max(5, { message: CreateOfferValidationMessage.rating.maxValue })
-  public rating: number;
 
   @IsEnum(OfferType, { message: CreateOfferValidationMessage.type.invalid })
   public type: OfferType;

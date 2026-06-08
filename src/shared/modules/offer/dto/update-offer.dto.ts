@@ -3,7 +3,6 @@ import {
   IsDateString,
   IsEnum,
   IsInt,
-  IsMongoId,
   IsOptional,
   Max,
   MaxLength,
@@ -86,10 +85,6 @@ export class UpdateOfferDto {
   @IsArray({ message: UpdateOfferValidationMessage.conveniences.invalidFormat })
   @IsEnum(ConvenienceType, { each: true, message: UpdateOfferValidationMessage.conveniences.invalid })
   public conveniences?: ConvenienceType[];
-
-  @IsOptional()
-  @IsMongoId({ message: UpdateOfferValidationMessage.userId.invalidId })
-  public userId?: string;
 
   @IsOptional()
   @IsNumber({}, { message: UpdateOfferValidationMessage.latitude.invalidFormat })

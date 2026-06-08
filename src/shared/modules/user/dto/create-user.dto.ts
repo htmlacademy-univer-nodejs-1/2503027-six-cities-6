@@ -1,4 +1,4 @@
-import { IsEmail, IsString, Length, IsOptional, Matches, IsEnum } from 'class-validator';
+import { IsEmail, IsString, Length, IsEnum } from 'class-validator';
 import { CreateUserMessages } from './create-user.messages.js';
 import { UserType } from '../../../types/user.type.js';
 

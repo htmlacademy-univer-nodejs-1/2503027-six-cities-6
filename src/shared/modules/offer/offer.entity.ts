@@ -1,6 +1,8 @@
 import { defaultClasses, getModelForClass, modelOptions, prop, Ref } from '@typegoose/typegoose';
 import { CityName, OfferType, ConvenienceType } from '../../types/index.js';
-import { UserEntity } from '../user/index.js';
+import { UserEntity } from '../user/user.entity.js';
+import { UserEntityConfig } from '../user/user.constant.js';
+import { LocationsSchema } from './locations.schema.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface OfferEntity extends defaultClasses.Base {}
@@ -71,8 +73,9 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   public conveniences!: ConvenienceType[];
 
   @prop({
-    ref: UserEntity,
-    required: true
+    type: () => String,
+    required: true,
+    ref: UserEntityConfig.REF
   })
   public userId!: Ref<UserEntity>;
 
@@ -84,6 +87,19 @@ export class OfferEntity extends defaultClasses.TimeStamps {
 
   @prop({ required: true })
   public longitude!: number;
+
+  @prop({
+    required: true,
+    _id: false,
+    type: () => LocationsSchema
+  })
+  public location!: LocationsSchema;
+
+  @prop({
+    ref: 'UserEntity',
+    default: [],
+  })
+  public favoriteByUsers!: Ref<UserEntity>[];
 }
 
 export const OfferModel = getModelForClass(OfferEntity);

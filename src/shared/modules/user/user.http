@@ -5,11 +5,11 @@ POST http://localhost:5000/users/register HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "torans@overlook.net",
-  "name": "Jack",
-  "password": "shining",
-  "type": "pro",
-  "avatarPath": "torrance.png"
+  "email": "torans4@overlook.net",
+  "avatarPath": "torrance.png",
+  "name": "Torrance",
+  "password": "shining1",
+  "type": "pro"
 }
 
 ###

@@ -3,5 +3,5 @@
     "src"
   ],
   "ext": "ts, json",
-  "exec": "npm run ts ./src/main.rest.ts | pino-pretty --colorize --translateTime SYS:standard"
+  "exec": "node --loader ts-node/esm --no-warnings ./src/main.rest.ts | pino-pretty --colorize --translateTime SYS:standard"
 }

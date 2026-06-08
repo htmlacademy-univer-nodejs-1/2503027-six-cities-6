@@ -61,3 +61,8 @@ export type Offer = {
     latitude: number;
     longitude: number;
 }
+
+export type Location = {
+  latitude: number;
+  longitude: number;
+}

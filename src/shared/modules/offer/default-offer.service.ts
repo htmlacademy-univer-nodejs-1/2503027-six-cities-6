@@ -7,14 +7,16 @@ import { OfferEntity } from './offer.entity.js';
 import { CreateOfferDto } from './dto/create-offer.dto.js';
 import { UpdateOfferDto } from './dto/update-offer.dto.js';
 import { CommentEntity } from '../comment/comment.entity.js';
-import { DEFAULT_OFFER_COUNT, DEFAULT_PREMIUM_OFFER_COUNT } from './offer.constant.js';
+import { DEFAULT_OFFER_COUNT } from './offer.constant.js';
+import { UserEntity } from '../user/index.js';
 
 @injectable()
 export class DefaultOfferService implements OfferService {
   constructor(
     @inject(Component.Logger) private readonly logger: Logger,
     @inject(Component.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>,
-    @inject(Component.CommentModel) private readonly commentModel: types.ModelType<CommentEntity>
+    @inject(Component.CommentModel) private readonly commentModel: types.ModelType<CommentEntity>,
+    @inject(Component.UserModel) private readonly userModel: types.ModelType<UserEntity>
   ) {}
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
@@ -65,18 +67,56 @@ export class DefaultOfferService implements OfferService {
     return (await this.offerModel.exists({ _id: documentId })) !== null;
   }
 
-  public async addToFavorite(offerId: string): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel
-      .findByIdAndUpdate(offerId, { isFavorite: true }, { new: true })
-      .populate(['userId'])
-      .exec();
+  public async addToFavorite(offerId: string, userId: string): Promise<void> {
+    const session = await this.offerModel.db.startSession();
+
+    try {
+      await session.withTransaction(async () => {
+        await this.offerModel
+          .updateOne({ _id: offerId }, { $addToSet: { favoriteByUsers: userId } }, { session })
+          .exec();
+        await this.userModel
+          .updateOne({ _id: userId }, { $addToSet: { favoriteOffers: offerId } }, { session })
+          .exec();
+      });
+    } catch {
+      await this.offerModel.updateOne({ _id: offerId }, { $addToSet: { favoriteByUsers: userId } }).exec();
+
+      try {
+        await this.userModel.updateOne({ _id: userId }, { $addToSet: { favoriteOffers: offerId } }).exec();
+      } catch (error) {
+        await this.offerModel.updateOne({ _id: offerId }, { $pull: { favoriteByUsers: userId } }).exec();
+        throw error;
+      }
+    } finally {
+      await session.endSession();
+    }
   }
 
-  public async removeFromFavorite(offerId: string): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel
-      .findByIdAndUpdate(offerId, { isFavorite: false }, { new: true })
-      .populate(['userId'])
-      .exec();
+  public async deleteFromFavorite(offerId: string, userId: string): Promise<void> {
+    const session = await this.offerModel.db.startSession();
+
+    try {
+      await session.withTransaction(async () => {
+        await this.offerModel
+          .updateOne({ _id: offerId }, { $pull: { favoriteByUsers: userId } }, { session })
+          .exec();
+        await this.userModel
+          .updateOne({ _id: userId }, { $pull: { favoriteOffers: offerId } }, { session })
+          .exec();
+      });
+    } catch {
+      await this.offerModel.updateOne({ _id: offerId }, { $pull: { favoriteByUsers: userId } }).exec();
+
+      try {
+        await this.userModel.updateOne({ _id: userId }, { $pull: { favoriteOffers: offerId } }).exec();
+      } catch (error) {
+        await this.offerModel.updateOne({ _id: offerId }, { $addToSet: { favoriteByUsers: userId } }).exec();
+        throw error;
+      }
+    } finally {
+      await session.endSession();
+    }
   }
 
   public async findFavorite(limit = DEFAULT_OFFER_COUNT): Promise<DocumentType<OfferEntity>[]> {

@@ -4,7 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import {
   BaseController,
   HttpError,
-  HttpMethod, UploadFileMiddleware,
+  HttpMethod, PrivateRouteMiddleware, UploadFileMiddleware,
   ValidateDtoMiddleware,
   ValidateObjectIdMiddleware,
 } from '../../libs/rest/index.js';
@@ -13,7 +13,7 @@ import { Component } from '../../types/index.js';
 import { CreateUserRequest } from './create-user-request.type.js';
 import { UserService } from './user-service.interface.js';
 import { Config, RestSchema } from '../../libs/config/index.js';
-import { fillDTO } from '../../helpers/index.js';
+import { fillDTO, getUserId } from '../../helpers/index.js';
 import { UserRdo } from './rdo/user.rdo.js';
 import { LoginUserRequest } from './login-user-request.type.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
@@ -21,6 +21,7 @@ import { LoginUserDto } from './dto/login-user.dto.js';
 import { AuthService } from '../auth/index.js';
 import { LoggedUserRdo } from './rdo/logged-user.rdo.js';
 import { UploadUserAvatarRdo } from './rdo/upload-user-avatar.rdo.js';
+import { prepareUser } from '../../helpers/user.js';
 
 @injectable()
 export class UserController extends BaseController {
@@ -58,6 +59,14 @@ export class UserController extends BaseController {
       method: HttpMethod.Get,
       handler: this.checkAuthenticate,
     });
+    this.addRoute({
+      path: '/profile',
+      method: HttpMethod.Get,
+      handler: this.profile,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+      ]
+    });
   }
 
   public async create(
@@ -86,6 +95,7 @@ export class UserController extends BaseController {
     const token = await this.authService.authenticate(user);
     const responseData = fillDTO(LoggedUserRdo, user);
     this.ok(res, Object.assign(responseData, { token }));
+    this.ok(res, responseData);
   }
 
   public async uploadAvatar({ params, file }: Request, res: Response) {
@@ -107,5 +117,20 @@ export class UserController extends BaseController {
     }
 
     this.ok(res, fillDTO(LoggedUserRdo, foundedUser));
+  }
+
+  public async profile(req: Request, res: Response): Promise<void> {
+    const userId = getUserId(req, 'UserController');
+    const existUser = await this.userService.findById(userId);
+
+    if(!existUser) {
+      throw new HttpError(
+        StatusCodes.UNAUTHORIZED,
+        'Unauthorized user',
+        'UserController'
+      );
+    }
+
+    this.ok(res, fillDTO(UserRdo, prepareUser(existUser)));
   }
 }

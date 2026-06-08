@@ -33,30 +33,18 @@
       "Dusseldorf"
     ],
     "previewImages": [
-      "https://images.example.com/p-01.jpg",
-      "https://images.example.com/p-02.jpg",
-      "https://images.example.com/p-03.jpg",
-      "https://images.example.com/p-04.jpg",
-      "https://images.example.com/p-05.jpg",
-      "https://images.example.com/p-06.jpg",
-      "https://images.example.com/p-07.jpg",
-      "https://images.example.com/p-08.jpg",
-      "https://images.example.com/p-09.jpg",
-      "https://images.example.com/p-10.jpg"
+      "ourses.openedu.ru/courses/course-v1:urfu+PhysCult+spring_2026/jump_to/block-v1:urfu+PhysCult+spring_2026+type@sequential+block@07785cf8936c4ec9a2998b6ec0b49d9e",
+      "https://i.pinimg.com/originals/94/43/49/9443499908f5ab66d7f2d24a819daa07.jpg",
+      "https://i.pinimg.com/736x/d2/10/64/d210644dc0941d303168a22150139a7d.jpg"
     ],
     "photos": [
-      "https://img.com/1.jpg",
-      "https://img.com/2.jpg",
-      "https://img.com/3.jpg",
-      "https://img.com/4.jpg",
-      "https://img.com/5.jpg",
-      "https://img.com/6.jpg",
-      "https://img.com/7.jpg",
-      "https://img.com/8.jpg",
-      "https://img.com/9.jpg",
-      "https://img.com/10.jpg",
-      "https://img.com/11.jpg",
-      "https://img.com/12.jpg"
+      "https://i.pinimg.com/736x/03/1e/cc/031ecc25634c96ac4189cdcac216c88e.jpg",
+      "https://avatars.mds.yandex.net/i?id=6341e7c87cb9988db9e093560a13f503c62057eb-5220773-images-thumbs&n=13",
+      "https://avatars.mds.yandex.net/i?id=3036a93e58888ed124a026963fdfd35c5105bf36-12555434-images-thumbs&n=13",
+      "https://avatars.mds.yandex.net/i?id=a2956cd57b00f8f675d0706e79d31cb8086e20ce-5241344-images-thumbs&n=13",
+      "https://avatars.mds.yandex.net/i?id=8f8f4816cc78779872865fa4c7fcec866f6a8e01-5309142-images-thumbs&n=13",
+      "https://avatars.mds.yandex.net/i?id=b04338555493bd09a3aed2f1eb6576ec02dfb623-4820710-images-thumbs&n=13",
+      "https://avatars.mds.yandex.net/i?id=76c2081e69f1fa71b2c4cdedb284306c8e34e2d7-9181103-images-thumbs&n=13"
     ],
     "types": [
       "apartment",

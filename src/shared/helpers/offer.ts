@@ -1,4 +1,7 @@
-import { Offer, OfferType, ConvenienceType, CityName, UserType } from '../types/index.js';
+import { DocumentType } from '@typegoose/typegoose';
+import { Offer, OfferType, UserType, CityName, ConvenienceType } from '../types/index.js';
+import { OfferEntity } from '../modules/offer/offer.entity.js';
+import { Cities } from '../constants/cities.js';
 
 export function createOffer(offerData: string): Offer {
   const fields = offerData.replace('\n', '').split('\t');
@@ -52,5 +55,45 @@ export function createOffer(offerData: string): Offer {
     commentsCount: Number.parseInt(commentsCount, 10),
     latitude: Number.parseFloat(lat),
     longitude: Number.parseFloat(long),
+  };
+}
+
+export function extractRefId(entity: unknown): string {
+  if (typeof entity === 'string') {
+    return entity;
+  }
+
+  if (typeof entity === 'object' && entity !== null && '_id' in entity) {
+    return String((entity as { _id: unknown })._id);
+  }
+
+  return String(entity);
+}
+
+export function prepareOffer(offer: DocumentType<OfferEntity>) {
+  const plain = offer.toObject() as OfferEntity;
+  const city = Cities[plain.city];
+
+  return {
+    ...plain,
+    id: String(offer._id),
+    commentCount: plain.commentsCount,
+    city: {
+      name: city.name,
+      location: city.location
+    }
+  };
+}
+
+export function mapOffer(offer: DocumentType<OfferEntity>, userId?: string) {
+  const preparedOffer = prepareOffer(offer);
+  const favoriteByUsers = offer.favoriteByUsers ?? [];
+  const isFavorite = userId
+    ? favoriteByUsers.some((favoriteUser) => extractRefId(favoriteUser) === userId)
+    : false;
+
+  return {
+    ...preparedOffer,
+    isFavorite
   };
 }

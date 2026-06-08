@@ -1,6 +1,8 @@
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { ValidationError } from 'class-validator';
-import { ApplicationError, ValidationErrorField } from '../libs/rest/index.js';
+import { ApplicationError, HttpError, ValidationErrorField } from '../libs/rest/index.js';
+import type { RequestWithTokenPayload } from '../modules/auth/index.js';
+import { StatusCodes } from 'http-status-codes';
 
 export function generateRandomValue(min:number, max: number, numAfterDigit = 0) {
   return +((Math.random() * (max - min)) + min).toFixed(numAfterDigit);
@@ -50,4 +52,18 @@ export function reduceValidationErrors(errors: ValidationError[]): ValidationErr
 
 export function getFullServerPath(host: string, port: number) {
   return `http://${host}:${port}`;
+}
+
+export function getUserId(req: unknown, controllerName: string): string {
+  const userId = (req as RequestWithTokenPayload | null | undefined)?.tokenPayload?.id;
+
+  if (!userId) {
+    throw new HttpError(
+      StatusCodes.UNAUTHORIZED,
+      'Unauthorized user',
+      controllerName,
+    );
+  }
+
+  return userId;
 }
